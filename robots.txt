@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sites.super.myninja.ai/d41a6317-8bba-411b-9c30-a8e09c9a7e41/fb4da9af/sitemap.xml
