@@ -209,6 +209,91 @@
     dateInput.min = iso;
   }
 
+  /* ---------- Stylist picker (photos + off days, built from the Our Team cards) ---------- */
+  var picker = document.getElementById('stylistPicker');
+  var stylistInput = document.getElementById('bStylist');
+  var stylistHint = document.getElementById('stylistHint');
+  var DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  var DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var stylists = [];
+
+  function buildPicker() {
+    if (!picker || !stylistInput) return;
+    document.querySelectorAll('#team .staff-card').forEach(function (card) {
+      var img = card.querySelector('.staff-photo img');
+      var nameEl = card.querySelector('h3');
+      var roleEl = card.querySelector('.staff-role');
+      var offEl = card.querySelector('.off b');
+      if (!img || !nameEl) return;
+      var offText = offEl ? offEl.textContent.trim() : '';
+      var offIdx = DAYS.indexOf(offText.slice(0, 3).toLowerCase());
+      stylists.push({
+        name: nameEl.textContent.trim(),
+        role: roleEl ? roleEl.textContent.trim() : '',
+        src: img.getAttribute('src'),
+        offIdx: offIdx
+      });
+    });
+
+    var html = '<label class="stylist-opt"><input type="radio" name="stylistPick" value="" checked>' +
+      '<span class="stylist-card stylist-card--any"><span class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.2 5.6L20 9.3l-4.4 3.8L17 19l-5-3.1L7 19l1.4-5.9L4 9.3l5.8-.7z"/></svg></span>' +
+      '<span class="nm">No preference</span><span class="sub">Anyone available</span></span></label>';
+
+    stylists.forEach(function (st, i) {
+      var role = st.role.replace(/&/g, '&amp;');
+      html += '<label class="stylist-opt"><input type="radio" name="stylistPick" value="' + i + '">' +
+        '<span class="stylist-card"><span class="avatar"><img src="' + st.src + '" alt="" loading="lazy"></span>' +
+        '<span class="nm">' + st.name + '</span>' +
+        '<span class="sub">' + role + '</span>' +
+        '<span class="offday">' + (st.offIdx > -1 ? 'Off: ' + DAY_NAMES[st.offIdx] + 's' : '') + '</span></span></label>';
+    });
+    picker.innerHTML = html;
+
+    picker.addEventListener('change', function (e) {
+      var v = e.target.value;
+      stylistInput.value = v === '' ? '' : stylists[+v].name + ' \u2014 ' + stylists[+v].role;
+    });
+    updateOffDays();
+  }
+
+  function updateOffDays() {
+    if (!picker) return;
+    var day = -1;
+    if (dateInput && dateInput.value) {
+      var d = new Date(dateInput.value + 'T00:00:00');
+      if (!isNaN(d)) day = d.getDay();
+    }
+    var clearedName = '';
+    picker.querySelectorAll('.stylist-opt').forEach(function (opt) {
+      var input = opt.querySelector('input');
+      if (input.value === '') return;
+      var st = stylists[+input.value];
+      var off = day > -1 && st.offIdx === day;
+      input.disabled = off;
+      opt.classList.toggle('is-off', off);
+      if (off && input.checked) {
+        clearedName = st.name;
+        picker.querySelector('input[value=""]').checked = true;
+        stylistInput.value = '';
+      }
+    });
+    if (stylistHint) {
+      if (clearedName) {
+        stylistHint.textContent = clearedName + ' is off on ' + DAY_NAMES[day] + 's, so we switched you back to "No preference". Pick another stylist or another date.';
+      } else if (day > -1) {
+        stylistHint.textContent = 'Greyed-out stylists are off on ' + DAY_NAMES[day] + 's.';
+      } else {
+        stylistHint.textContent = 'Pick a date and we\u2019ll grey out anyone who is off that day.';
+      }
+    }
+  }
+
+  buildPicker();
+  if (dateInput) {
+    dateInput.addEventListener('change', updateOffDays);
+    dateInput.addEventListener('input', updateOffDays);
+  }
+
   /* ---------- Form validation + WhatsApp submit ---------- */
   function setInvalid(id, bad) {
     var field = document.getElementById(id).closest('.field');
