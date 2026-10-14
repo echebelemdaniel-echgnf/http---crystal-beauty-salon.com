@@ -350,6 +350,30 @@ section[id]{scroll-margin-top:92px}
 .modal-success h3{margin-bottom:.6rem;font-size:1.7rem}
 .modal-success p{color:var(--muted);max-width:400px;margin:0 auto 1.4rem}
 
+
+/* Stylist picker in booking form */
+.stylist-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+.stylist-opt,.field label.stylist-opt{position:relative;cursor:pointer;display:block;text-transform:none;letter-spacing:normal;font-size:inherit;font-weight:400;color:inherit}
+.stylist-opt input{position:absolute;opacity:0;pointer-events:none}
+.stylist-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.15rem;height:100%;padding:.7rem .4rem .6rem;border:1.5px solid rgba(0,0,0,.1);border-radius:14px;background:#fff;transition:border-color .25s,box-shadow .25s,transform .25s}
+.stylist-opt:hover .stylist-card{border-color:var(--gold);transform:translateY(-2px)}
+.stylist-opt input:checked + .stylist-card{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,75,.25);background:#fffaf0}
+.stylist-opt input:focus-visible + .stylist-card{outline:2px solid var(--gold);outline-offset:2px}
+.stylist-card .avatar{width:58px;height:58px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--grad-plum);color:var(--gold-2);margin-bottom:.3rem}
+.stylist-card .avatar img{width:100%;height:100%;object-fit:cover;object-position:center 22%}
+.stylist-card .avatar svg{width:26px;height:26px}
+.stylist-card .nm{font-size:.78rem;font-weight:600;line-height:1.2;color:var(--text)}
+.stylist-card .sub{font-size:.68rem;color:var(--muted)}
+.stylist-card .offday{font-size:.68rem;color:var(--gold-3);font-weight:500}
+.stylist-opt.is-off{cursor:not-allowed}
+.stylist-opt.is-off .stylist-card{opacity:.42;filter:grayscale(1);transform:none;border-color:rgba(0,0,0,.1)}
+.stylist-opt.is-off .offday{color:#c0392b;font-weight:600}
+.stylist-hint{font-size:.75rem;color:var(--muted)}
+@media (max-width:560px){
+  .stylist-grid{grid-template-columns:repeat(3,1fr);gap:.5rem}
+  .stylist-card .avatar{width:50px;height:50px}
+}
+
 /* ---------- Lightbox ---------- */
 .lightbox{position:fixed;inset:0;background:rgba(15,11,14,.94);z-index:210;display:none;align-items:center;justify-content:center;padding:2rem}
 .lightbox.open{display:flex}
